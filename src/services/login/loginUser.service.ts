@@ -5,36 +5,31 @@ import { IUserLogin } from "../../interfaces/users"
 import { compare } from "bcrypt"
 import jwt from "jsonwebtoken"
 
-const loginUserService = async( { email, password }: IUserLogin ): Promise<string> => {
-    const verifyValues = [email, password]
+const areNullOrUndefined = (...values: any[]): boolean {
+  return values.some(value => value === null || value === undefined);
+}
 
-    verifyValues.forEach(element => {
-        if (element === null) {
-            throw new AppError(400, `Missing data`)
-        }
-    });
+const loginUserService = async( { email, password }: IUserLogin ): Promise<string> => {
+    if (!areNullOrUndefined(email, password))
+        throw new AppError(400, `Missing data`)
 
     const userRepository = AppDataSource.getRepository(User)
     const user = await userRepository.findOne({
-        where: {
-            email: email
-        }
+        where: { email}
     })
 
-    if(!user){
+    if (!user)
         throw new AppError(401, "Invalid email or password")
-    }
-
+    
     const verifyPassword = await compare(password, user.password)
 
-    if(!verifyPassword){
+    if (!verifyPassword)
         throw new AppError(403, "Invalid credentials")
-    }
+    
 
-    if(!user.isActive){
+    if (!user.isActive)
         throw new AppError(400, "Inactive user")
-    }
-
+    
     const token = jwt.sign (
                                 {
                                     isAdm: user.isAdm,
