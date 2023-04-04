@@ -15,7 +15,7 @@ const loginUserService = async( { email, password }: IUserLogin ): Promise<strin
 
     const userRepository = AppDataSource.getRepository(User)
     const user = await userRepository.findOne({
-        where: { email}
+        where: { email }
     })
 
     if (!user)
