@@ -10,9 +10,9 @@ const createScheduleService = async ( { userId, propertyId, date, hour }: ISched
     const verifyValues = [userId, propertyId, date, hour]
 
     verifyValues.forEach(element => {
-        if (element === null) {
+        if (element === null) 
             throw new AppError(400, "Missing data")
-        }
+        
     });
 
     const schedulesRepository = AppDataSource.getRepository(SchedulesUserProperties)
@@ -40,9 +40,9 @@ const createScheduleService = async ( { userId, propertyId, date, hour }: ISched
         }
     })
         
-    if (!property) {
+    if (!property) 
         throw new AppError(404, "Property not found")
-    }
+    
 
     schedules.find(schedule => {
         const scheduleDates = `${schedule.date}, ${schedule.hour}`
@@ -57,21 +57,8 @@ const createScheduleService = async ( { userId, propertyId, date, hour }: ISched
         id: userId
     })
 
-    if (!user) {
+    if (!user) 
         throw new AppError(404, "User not found")
-    }
-
-    const busySchedule = schedules.find(schedule => {
-        if (JSON.stringify(schedule.date) === JSON.stringify(date)) {
-            if (JSON.stringify(schedule.hour) === JSON.stringify(hour)) {
-                return true
-            }
-        } 
-    })
-
-    if (busySchedule) {
-        throw new AppError(409, "Another schedule at this time")
-    }
     
     const schedule = schedulesRepository.create({
         property,
